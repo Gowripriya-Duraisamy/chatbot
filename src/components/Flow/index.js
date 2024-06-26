@@ -3,7 +3,7 @@ import { useCallback,useRef } from "react";
 import useStore from "../../store";
 import Message from "../NodesPanel/MessageNode";
 import ArrowHead from "../Edge/CustomEdge";
-import { Box, Snackbar, Alert } from '@mui/material';
+import { Box } from '@mui/material';
 
 import classes from "./flow.module.scss";
 import "reactflow/dist/style.css";
@@ -18,7 +18,7 @@ const edgeTypes = {
 
 const Flow = () => {
   const reactFlowWrapper = useRef(null);
-  const { nodes, edges, setEdges, addNode, setSelectedNode, onNodesChange, setErrorMessage, errorMessage } = useStore();
+  const { nodes, edges, setEdges, addNode, setSelectedNode, onNodesChange } = useStore();
 
   const onDragOver = useCallback((event) => {
     event.preventDefault();
@@ -59,10 +59,6 @@ const Flow = () => {
     setEdges(newEdges);
   }, [edges, setEdges]);
 
-  const handleClose = () => {
-    setErrorMessage('');
-  };
-
   return (
     <Box
       className={classes.flowBox}
@@ -86,13 +82,6 @@ const Flow = () => {
         <Controls />
         <ArrowHead /> 
       </ReactFlow>
-      {errorMessage && (
-        <Snackbar open={Boolean(errorMessage)} autoHideDuration={6000} onClose={handleClose}>
-          <Alert onClose={handleClose} severity="error">
-            {errorMessage}
-          </Alert>
-        </Snackbar>
-      )}
     </Box>
   );
 };

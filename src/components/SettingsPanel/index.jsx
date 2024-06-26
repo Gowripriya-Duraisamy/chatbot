@@ -6,8 +6,8 @@ import useStore from "../../store";
 import classes from "./settings.module.scss";
 
 const SettingsPanel = () => {
-  const { setSelectedNode, setNodes, nodes, selectedNode} = useStore();
-  const [content, setContent] = useState(selectedNode.data.content || '')
+  const { setSelectedNode, setNodes, nodes, selectedNode } = useStore();
+  const [content, setContent] = useState(selectedNode.data.content || "");
 
   const onNodeClick = useCallback(() => {
     setSelectedNode();
@@ -18,11 +18,11 @@ const SettingsPanel = () => {
       const newContent = event.target.value;
       setContent(newContent);
       const newNodes = nodes.map((n) =>
-            n.id === selectedNode.id
-              ? { ...n, data: { ...n.data, content: newContent } }
-              : n
-          )
-      setNodes(newNodes)
+        n.id === selectedNode.id
+          ? { ...n, data: { ...n.data, content: newContent } }
+          : n
+      );
+      setNodes(newNodes);
     },
     [setNodes, selectedNode.id, nodes, setContent]
   );
@@ -33,7 +33,10 @@ const SettingsPanel = () => {
         <IconButton onClick={onNodeClick}>
           <IoIosArrowRoundBack />
         </IconButton>
-        <Typography className={classes.header}>{selectedNode.type}</Typography>
+        <Typography className={classes.header}>
+          {selectedNode.type.charAt(0).toUpperCase() +
+            selectedNode.type.slice(1)}
+        </Typography>
       </Box>
       <Divider className={classes.headerdivider}></Divider>
 

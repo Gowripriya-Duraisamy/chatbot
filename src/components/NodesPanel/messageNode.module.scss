@@ -1,23 +1,74 @@
-
 .nodeBox {
-    padding: 10px;
-    border: 1px solid #ddd;
-    border-radius: 5px;
-    background-color: white;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-  }
+  padding: 0;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+  background-color: white;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 250px;
+}
 
-  .messageBox {
-    padding: 2px;
-    border: 2px solid #ddd;
-    border-radius: 5px;
-    background-color: white;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    cursor: grab;
-    width:50%;
-    margin-top: 1rem;
+.messageBox {
+  padding: 2px;
+  border: 2px solid #ddd;
+  border-radius: 5px;
+  background-color: white;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  cursor: grab;
+  width: 50%;
+  margin-top: 1rem;
+}
+
+.whatsappIcon {
+  background: white;
+  color: #25D366;
+  padding: 2px;
+  border: 1px solid white;
+  border-radius: 1rem;
+
+}
+
+.iconButton {
+  svg {
+    width: 10px;
+    height: 10px;
   }
+}
+
+.containerGrid {
+  display: flex;
+  align-items: center;
+  background-color: #d0f9de;
+}
+
+.headerLeftGrid {
+  display: flex;
+  align-items: center;
+}
+
+.title {
+  font-size: 11px;
+  font-weight: bold;
+}
+
+.content {
+  font-size: 12px;
+  color: #555;
+  word-wrap: break-word; /* This ensures long words are wrapped to the next line */
+  white-space: pre-wrap; /* This preserves whitespace formatting */
+  margin-top: 4px;
+}
+
+.outerContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+.contentGrid {
+    display: flex;
+    padding: 12px;
+}

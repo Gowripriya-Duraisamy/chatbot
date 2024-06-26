@@ -1,8 +1,8 @@
 import React from 'react';
-import { getSmoothStepPath } from 'reactflow';
+import { getBezierPath } from 'reactflow';
 
 const ArrowHead = ({ id, sourceX, sourceY, targetX, targetY, sourcePosition, targetPosition, style }) => {
-  const [edgePath] = getSmoothStepPath({
+  const [edgePath] = getBezierPath({
     sourceX,
     sourceY,
     targetX,
