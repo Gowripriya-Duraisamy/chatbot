@@ -1,0 +1,28 @@
+
+.toolBar {
+    display: flex;
+    justify-content: flex-start;
+}
+
+.header {
+    color: black;
+    flex-grow: 1;
+    align-content: center;
+    padding: 3px 0;
+}
+
+.contentHeader {
+    padding: 0.5rem 4px;
+    display: flex;
+    justify-content: flex-start; 
+    color: #b8b5b5;
+}
+
+.divider {
+    color:  #b8b5b5 ;
+    padding: 1rem 0;
+}
+
+.headerDivider {
+    color:  #b8b5b5 ;
+}

@@ -1,0 +1,19 @@
+.toolBar {
+    display: flex;
+    justify-content:  flex-end;
+}
+
+.appBar {
+    background-color: #c6c3c3;
+}
+
+.customButton {
+    color: black;
+    text-transform: none;
+    background-color: white;
+    font-size: 12px;
+}
+
+.customButton:hover {
+    background-color: #aff8cd;
+}
