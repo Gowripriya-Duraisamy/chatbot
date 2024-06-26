@@ -4,7 +4,7 @@ import { applyNodeChanges, applyEdgeChanges } from "reactflow";
 const useStore = create((set, get) => ({
   nodes: [],
   edges: [],
-  errorMessage: '',
+  errorMessage: "",
   setErrorMessage: (message) => set({ errorMessage: message }),
   selectedNode: null,
   setNodes: (newNodes) => set({ nodes: newNodes }),
@@ -17,6 +17,8 @@ const useStore = create((set, get) => ({
     set({
       edges: applyEdgeChanges(changes, get().edges),
     }),
+  updateEdges: (updateFunc) =>
+    set((state) => ({ edges: updateFunc(state.edges) })),
   addNode: (node) =>
     set({
       nodes: [...get().nodes, node],

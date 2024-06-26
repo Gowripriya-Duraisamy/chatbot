@@ -1,10 +1,10 @@
-import { AppBar, Box, Toolbar, Button, Snackbar, Alert } from "@mui/material";
+import { AppBar, Box, Toolbar, Button} from "@mui/material";
 import classes from "./header.module.scss";
 import useStore from "../../store";
 import { useCallback } from "react";
 
 const Header = () => {
-  const { nodes, edges, setErrorMessage, errorMessage } = useStore();
+  const { nodes, edges, setErrorMessage } = useStore();
 
   const hasEmptyTargetHandle = useCallback((node, edges) => {
     const targetHandle = node.data.targetHandle || null;
@@ -33,10 +33,6 @@ const Header = () => {
     }
   }, [nodes, edges, countNodesWithEmptyTargetHandles, setErrorMessage]);
 
-  const handleClose = () => {
-    setErrorMessage("");
-  };
-
   return (
     <Box sx={{ flexGrow: 1 }}>
       <AppBar className={classes.appBar} position="static">
@@ -48,18 +44,6 @@ const Header = () => {
           >
             Save Changes
           </Button>
-          {errorMessage && (
-            <Snackbar
-              anchorOrigin={{ vertical: "top", horizontal: "center" }}
-              open={Boolean(errorMessage)}
-              autoHideDuration={6000}
-              onClose={handleClose}
-            >
-              <Alert onClose={handleClose} severity="error">
-                {errorMessage}
-              </Alert>
-            </Snackbar>
-          )}
         </Toolbar>
       </AppBar>
     </Box>
