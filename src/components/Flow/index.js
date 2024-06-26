@@ -1,9 +1,9 @@
 import ReactFlow, { Background, Controls  } from "reactflow";
 import { useCallback,useRef } from "react";
-import { Box } from "@mui/material";
 import useStore from "../../store";
 import Message from "../NodesPanel/MessageNode";
 import ArrowHead from "../Edge/CustomEdge";
+import { Box, Snackbar, Alert } from '@mui/material';
 
 import classes from "./flow.module.scss";
 import "reactflow/dist/style.css";
@@ -18,7 +18,7 @@ const edgeTypes = {
 
 const Flow = () => {
   const reactFlowWrapper = useRef(null);
-  const { nodes, edges, setEdges, addNode, setSelectedNode } = useStore();
+  const { nodes, edges, setEdges, addNode, setSelectedNode, onNodesChange, setErrorMessage, errorMessage } = useStore();
 
   const onDragOver = useCallback((event) => {
     event.preventDefault();
@@ -43,6 +43,7 @@ const Flow = () => {
       data: {
         header: "Send Message",
         content: `Text message ${(nodes.length + 1).toString()}`,
+        targetHandle: `target-handle-${(nodes.length + 1).toString()}`
       },
     };
 
@@ -57,6 +58,10 @@ const Flow = () => {
     const newEdges = [...edges, { id: `${params.source}-${params.target}`,  type: 'arrowHead', ...params } ]
     setEdges(newEdges);
   }, [edges, setEdges]);
+
+  const handleClose = () => {
+    setErrorMessage('');
+  };
 
   return (
     <Box
@@ -81,6 +86,13 @@ const Flow = () => {
         <Controls />
         <ArrowHead /> 
       </ReactFlow>
+      {errorMessage && (
+        <Snackbar open={Boolean(errorMessage)} autoHideDuration={6000} onClose={handleClose}>
+          <Alert onClose={handleClose} severity="error">
+            {errorMessage}
+          </Alert>
+        </Snackbar>
+      )}
     </Box>
   );
 };

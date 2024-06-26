@@ -23,6 +23,7 @@ const MessageNode = ({ data }) => {
         <Typography>{data.content}</Typography>
         <Handle
           type="target"
+          id={data.targetHandle}
           position={Position.Left}
           style={{ top: '50%', transform: 'translateY(-50%)', background: '#555' }}
         />
