@@ -1,8 +1,9 @@
-import ReactFlow, { Background, addEdge } from "reactflow";
+import ReactFlow, { Background, Controls  } from "reactflow";
 import { useCallback,useRef } from "react";
 import { Box } from "@mui/material";
 import useStore from "../../store";
 import Message from "../NodesPanel/MessageNode";
+import ArrowHead from "../Edge/CustomEdge";
 
 import classes from "./flow.module.scss";
 import "reactflow/dist/style.css";
@@ -11,9 +12,13 @@ const nodeTypes = {
   message: Message,
 };
 
+const edgeTypes = {
+  arrowHead: ArrowHead,
+};
+
 const Flow = () => {
   const reactFlowWrapper = useRef(null);
-  const { nodes, onNodesChange, edges, setEdges, addNode, setSelectedNode, onEdgesChange } = useStore();
+  const { nodes, edges, setEdges, addNode, setSelectedNode } = useStore();
 
   const onDragOver = useCallback((event) => {
     event.preventDefault();
@@ -36,10 +41,6 @@ const Flow = () => {
       type,
       position,
       data: {
-        id:(nodes.length + 1).toString(),
-        target: [],
-        sources: 1,
-        label: `${type.charAt(0).toUpperCase() + type.slice(1)} Node`,
         header: "Send Message",
         content: `Text message ${(nodes.length + 1).toString()}`,
       },
@@ -52,10 +53,10 @@ const Flow = () => {
     setSelectedNode(node);
   }, [setSelectedNode]);
 
-  const onConnect = useCallback(
-    (params) => setEdges((eds) => addEdge(params, eds)),
-    [setEdges]
-  );
+  const onConnect = useCallback((params) => {
+    const newEdges = [...edges, { id: `${params.source}-${params.target}`,  type: 'arrowHead', ...params } ]
+    setEdges(newEdges);
+  }, [edges, setEdges]);
 
   return (
     <Box
@@ -68,15 +69,17 @@ const Flow = () => {
         nodes={nodes}
         edges={edges}
         onNodesChange={onNodesChange}
-        onEdgesChange={onEdgesChange}
         onNodeClick={onNodeClick}
         onConnect={onConnect}
         nodeTypes={nodeTypes}
+        edgeTypes={edgeTypes}
         fitview={"true"}
         proOptions={{ hideAttribution: true }}
         className={classes.flow}
       >
         <Background />
+        <Controls />
+        <ArrowHead /> 
       </ReactFlow>
     </Box>
   );
