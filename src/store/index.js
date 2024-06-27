@@ -6,7 +6,6 @@ const useStore = create((set, get) => ({
   edges: [],
   errorMessage: "",
   setErrorMessage: (message) => set({ errorMessage: message }),
-  selectedNode: null,
   setNodes: (newNodes) => set({ nodes: newNodes }),
   setEdges: (newEdges) => set({ edges: newEdges }),
   onNodesChange: (changes) =>
@@ -19,11 +18,16 @@ const useStore = create((set, get) => ({
     }),
   updateEdges: (updateFunc) =>
     set((state) => ({ edges: updateFunc(state.edges) })),
+  updateEdge: (oldEdge, newConnection) =>
+    set((state) => ({
+      edges: state.edges.map((edge) =>
+        edge.id === oldEdge.id ? { ...edge, ...newConnection } : edge
+      ),
+    })),
   addNode: (node) =>
     set({
       nodes: [...get().nodes, node],
     }),
-  setSelectedNode: (node) => set({ selectedNode: node }),
 }));
 
 export default useStore;

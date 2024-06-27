@@ -1,12 +1,18 @@
-import React from 'react';
-import Builder from "./components/Builder";
-import './App.css';
+import React from "react";
+import { ReactFlowProvider } from "reactflow";
 
+import Flow from "./components/Flow";
+import Header from "./components/Header";
+
+import "./App.css";
 
 function App() {
   return (
     <div className="App">
-      <Builder />
+      <ReactFlowProvider>
+        <Header />
+        <Flow />
+      </ReactFlowProvider>
     </div>
   );
 }

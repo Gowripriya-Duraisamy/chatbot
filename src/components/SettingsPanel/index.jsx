@@ -5,13 +5,9 @@ import useStore from "../../store";
 
 import classes from "./settings.module.scss";
 
-const SettingsPanel = () => {
-  const { setSelectedNode, setNodes, nodes, selectedNode } = useStore();
+const SettingsPanel = ({selectedNode, handleClose}) => {
+  const {  setNodes, nodes} = useStore();
   const [content, setContent] = useState(selectedNode.data.content || "");
-
-  const onNodeClick = useCallback(() => {
-    setSelectedNode();
-  }, [setSelectedNode]);
 
   const handleContentChange = useCallback(
     (event) => {
@@ -30,7 +26,7 @@ const SettingsPanel = () => {
   return (
     <Box>
       <Box position="static" className={classes.toolBar}>
-        <IconButton onClick={onNodeClick}>
+        <IconButton onClick={handleClose}>
           <IoIosArrowRoundBack />
         </IconButton>
         <Typography className={classes.header}>

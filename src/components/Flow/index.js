@@ -1,9 +1,11 @@
 import ReactFlow, { Background, Controls, addEdge } from "reactflow";
-import { useCallback, useRef } from "react";
+import { useCallback, useRef, useState } from "react";
 import useStore from "../../store";
 import Message from "../NodesPanel/MessageNode";
 import ArrowHead from "../Edge/CustomEdge";
-import { Box, Snackbar, Alert } from "@mui/material";
+import { Box, Snackbar, Alert, Grid } from "@mui/material";
+import SettingsPanel from "../SettingsPanel";
+import ArrowMarker from "../Edge/ArrowMarker";
 
 import classes from "./flow.module.scss";
 import "reactflow/dist/style.css";
@@ -18,16 +20,18 @@ const edgeTypes = {
 
 const Flow = () => {
   const reactFlowWrapper = useRef(null);
+  const [selectedNode, setSelectedNode] = useState(null);
+  const [settingsKey, setSettingsKey] = useState(0);
   const {
     nodes,
     edges,
     setEdges,
     addNode,
-    setSelectedNode,
     updateEdges,
     errorMessage,
     setErrorMessage,
-    onNodesChange
+    onNodesChange,
+    updateEdge,
   } = useStore();
 
   const onDragOver = useCallback((event) => {
@@ -64,10 +68,11 @@ const Flow = () => {
   );
 
   const onNodeClick = useCallback(
-    (event, node) => {
+    (_event, node) => {
       setSelectedNode(node);
+      setSettingsKey((prevKey) => prevKey + 1);
     },
-    [setSelectedNode]
+    [setSelectedNode, setSettingsKey]
   );
 
   const onConnect = useCallback(
@@ -80,7 +85,16 @@ const Flow = () => {
       );
 
       if (!existingEdge) {
-        updateEdges((eds) => addEdge({ id: `${params.source}-${params.target}`,  type: 'arrowHead', ...params }, eds));
+        updateEdges((eds) =>
+          addEdge(
+            {
+              id: `${params.source}-${params.target}`,
+              type: "arrowHead",
+              ...params,
+            },
+            eds
+          )
+        );
       } else {
         console.log("Only one edge is allowed from a source handle.");
       }
@@ -88,62 +102,99 @@ const Flow = () => {
     [edges, updateEdges]
   );
 
-  const isValidConnection = useCallback(
-    (connection) => {
-      // Prevent more than one edge from the same source handle
-      const existingEdge = edges.some(
+  const onEdgeUpdate = useCallback(
+    (oldEdge, newConnection) => {
+      // Validate the connection before updating
+      const existingEdge = edges.find(
         (edge) =>
-          edge.source === connection.source &&
-          edge.sourceHandle === connection.sourceHandle
+          edge.source === newConnection.source &&
+          edge.sourceHandle === newConnection.sourceHandle
       );
-      !!existingEdge && setErrorMessage("Only one edge is allowed from a source handle.")
-      return !existingEdge;
+
+      if (
+        !existingEdge ||
+        oldEdge.source === newConnection.source ||
+        (existingEdge && oldEdge.targetHandle !== newConnection.targetHandle)
+      ) {
+        updateEdge(oldEdge, newConnection, edges);
+      } else {
+        setErrorMessage("Only one edge is allowed from a source handle.");
+      }
     },
-    [edges, setErrorMessage]
+    [edges, updateEdge, setErrorMessage]
   );
 
   const handleClose = () => {
     setErrorMessage("");
   };
+  const handleSettingsClose = () => {
+    setSelectedNode(null);
+  };
+
+  const onEdgeClick = useCallback((event, edge) => {
+    event.preventDefault();
+    event.stopPropagation();
+    console.log("Edge clicked:", edge);
+  }, []);
 
   return (
-    <Box
-      className={classes.flowBox}
-      ref={reactFlowWrapper}
-      onDrop={onDrop}
-      onDragOver={onDragOver}
-    >
-      <ReactFlow
-        nodes={nodes}
-        edges={edges}
-        edgeTypes={edgeTypes}
-        onNodeClick={onNodeClick}
-        onConnect={onConnect}
-        onNodesChange={onNodesChange}
-        onEdgesChange={setEdges}
-        nodeTypes={nodeTypes}
-        isValidConnection={isValidConnection}
-        fitview={"true"}
-        proOptions={{ hideAttribution: true }}
-        className={classes.flow}
-      >
-        <Background />
-        <Controls />
-        <ArrowHead />
-      </ReactFlow>
-      {errorMessage && (
-        <Snackbar
-          anchorOrigin={{ vertical: "top", horizontal: "center" }}
-          open={Boolean(errorMessage)}
-          autoHideDuration={5000}
-          onClose={handleClose}
+    <Grid container>
+      <Grid item xs={9.5} className={classes.flowGrid}>
+        <Box
+          className={classes.flowBox}
+          ref={reactFlowWrapper}
+          onDrop={onDrop}
+          onDragOver={onDragOver}
         >
-          <Alert onClose={handleClose} severity="error">
-            {errorMessage}
-          </Alert>
-        </Snackbar>
-      )}
-    </Box>
+          <ReactFlow
+            nodes={nodes}
+            edges={edges}
+            nodeTypes={nodeTypes}
+            onNodeClick={onNodeClick}
+            onNodesChange={onNodesChange}
+            edgeTypes={edgeTypes}
+            onConnect={onConnect}
+            onEdgesChange={(edges) => {
+              // Prevent edge deletion
+              setEdges(edges.filter((edge) => !edge.__rf?.deletable));
+            }}
+            onEdgeClick={onEdgeClick}
+            onEdgeUpdate={onEdgeUpdate}
+            fitview={"true"}
+            proOptions={{ hideAttribution: true }}
+            className={classes.flow}
+            deleteKeyCode={null}
+          >
+            <Background />
+            <Controls />
+            <ArrowHead />
+          </ReactFlow>
+          {errorMessage && (
+            <Snackbar
+              anchorOrigin={{ vertical: "top", horizontal: "center" }}
+              open={Boolean(errorMessage)}
+              autoHideDuration={5000}
+              onClose={handleClose}
+            >
+              <Alert onClose={handleClose} severity="error">
+                {errorMessage}
+              </Alert>
+            </Snackbar>
+          )}
+        </Box>
+        <ArrowMarker />
+      </Grid>
+      <Grid item xs={2.5} className={classes.panelGrid}>
+        {!selectedNode && <Message />}
+        {selectedNode && (
+          <SettingsPanel
+            key={settingsKey}
+            selectedNode={selectedNode}
+            handleClose={handleSettingsClose}
+          />
+        )}
+      </Grid>
+    </Grid>
   );
 };
 
