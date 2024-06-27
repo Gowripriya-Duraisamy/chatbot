@@ -1,27 +1,31 @@
+// Import necessary components and styles from libraries and local modules
 import ReactFlow, { Background, Controls, addEdge } from "reactflow";
 import { useCallback, useRef, useState } from "react";
+import { Box, Snackbar, Alert, Grid } from "@mui/material";
 import useStore from "../../store";
 import Message from "../NodesPanel/MessageNode";
 import ArrowHead from "../Edge/CustomEdge";
-import { Box, Snackbar, Alert, Grid } from "@mui/material";
 import SettingsPanel from "../SettingsPanel";
 import ArrowMarker from "../Edge/ArrowMarker";
 
-import classes from "./flow.module.scss";
-import "reactflow/dist/style.css";
+import classes from "./flow.module.scss"; // Import styles for Flow component
+import "reactflow/dist/style.css"; // Import default styles for ReactFlow components
 
+// Define node types using custom components
 const nodeTypes = {
   message: Message,
 };
 
+// Define edge types using custom components
 const edgeTypes = {
   arrowHead: ArrowHead,
 };
 
+// Functional component for rendering the flow chart application
 const Flow = () => {
-  const reactFlowWrapper = useRef(null);
-  const [selectedNode, setSelectedNode] = useState(null);
-  const [settingsKey, setSettingsKey] = useState(0);
+  const reactFlowWrapper = useRef(null); // Reference for the ReactFlow wrapper element
+  const [selectedNode, setSelectedNode] = useState(null); // State to track selected node
+  const [settingsKey, setSettingsKey] = useState(0); // State to force re-render SettingsPanel
   const {
     nodes,
     edges,
@@ -32,13 +36,15 @@ const Flow = () => {
     setErrorMessage,
     onNodesChange,
     updateEdge,
-  } = useStore();
+  } = useStore(); // Accessing state and methods from custom useStore hook
 
+  // Callback function to handle drag over event for node placement
   const onDragOver = useCallback((event) => {
     event.preventDefault();
     event.dataTransfer.dropEffect = "move";
   }, []);
 
+  // Callback function to handle drop event for adding new nodes
   const onDrop = useCallback(
     (event) => {
       event.preventDefault();
@@ -62,19 +68,21 @@ const Flow = () => {
         },
       };
 
-      addNode(newNode);
+      addNode(newNode); // Add new node to the flow chart
     },
     [addNode, nodes.length]
   );
 
+  // Callback function to handle node click event for selecting a node
   const onNodeClick = useCallback(
     (_event, node) => {
-      setSelectedNode(node);
-      setSettingsKey((prevKey) => prevKey + 1);
+      setSelectedNode(node); // Set selected node on click
+      setSettingsKey((prevKey) => prevKey + 1); // Increment settings key to force SettingsPanel re-render
     },
     [setSelectedNode, setSettingsKey]
   );
 
+  // Callback function to handle connection creation between nodes
   const onConnect = useCallback(
     (params) => {
       // Check if there is already an edge from the source handle
@@ -102,6 +110,7 @@ const Flow = () => {
     [edges, updateEdges]
   );
 
+  // Callback function to handle edge update events
   const onEdgeUpdate = useCallback(
     (oldEdge, newConnection) => {
       // Validate the connection before updating
@@ -124,19 +133,24 @@ const Flow = () => {
     [edges, updateEdge, setErrorMessage]
   );
 
+  // Callback function to handle closing error message Snackbar
   const handleClose = () => {
     setErrorMessage("");
   };
+
+  // Callback function to handle closing SettingsPanel
   const handleSettingsClose = () => {
-    setSelectedNode(null);
+    setSelectedNode(null); // Clear selected node to close SettingsPanel
   };
 
+  // Callback function to handle edge click events (currently logging)
   const onEdgeClick = useCallback((event, edge) => {
     event.preventDefault();
     event.stopPropagation();
     console.log("Edge clicked:", edge);
   }, []);
 
+  // Render the Flow component with grid layout
   return (
     <Grid container>
       <Grid item xs={9.5} className={classes.flowGrid}>
@@ -146,6 +160,7 @@ const Flow = () => {
           onDrop={onDrop}
           onDragOver={onDragOver}
         >
+          {/* ReactFlow component for rendering nodes and edges */}
           <ReactFlow
             nodes={nodes}
             edges={edges}
@@ -169,6 +184,8 @@ const Flow = () => {
             <Controls />
             <ArrowHead />
           </ReactFlow>
+
+          {/* Snackbar for displaying error messages */}
           {errorMessage && (
             <Snackbar
               anchorOrigin={{ vertical: "top", horizontal: "center" }}
@@ -182,10 +199,15 @@ const Flow = () => {
             </Snackbar>
           )}
         </Box>
+
+        {/* ArrowMarker component for rendering custom arrow markers */}
         <ArrowMarker />
       </Grid>
+
+      {/* Grid item for rendering side panel */}
       <Grid item xs={2.5} className={classes.panelGrid}>
-        {!selectedNode && <Message />}
+        {/* Conditional rendering based on selectedNode */}
+        {!selectedNode && <Message />} {/* Render Message component if no node is selected */}
         {selectedNode && (
           <SettingsPanel
             key={settingsKey}
@@ -198,4 +220,4 @@ const Flow = () => {
   );
 };
 
-export default Flow;
+export default Flow; // Export Flow component as default
